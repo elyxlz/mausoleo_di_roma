@@ -1,12 +1,14 @@
 FROM python:3.11-slim
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 WORKDIR /app
 
-COPY pyproject.toml .
-RUN pip install --no-cache-dir .
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 
 COPY src/ src/
 
 EXPOSE 8000
 
-CMD ["uvicorn", "mausoleo.server.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "mausoleo.server.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
