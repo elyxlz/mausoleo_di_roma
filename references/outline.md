@@ -1,8 +1,8 @@
 # Mausoleo dissertation outline (BASC0024)
 
-**Working thesis (E)**: Mausoleo's OCR + hierarchical indexing + agent-mediated search pipeline outperforms keyword-search-over-flat-OCR on archival research tasks, demonstrated through case studies on *Il Messaggero* July 1943.
+**Working thesis (E)**: Mausoleo's OCR + hierarchical indexing + agent-mediated search pipeline outperforms keyword-search-over-flat-OCR on archival research tasks, demonstrated through case studies on *Il Messaggero* July 1943. The pipeline's chronological hierarchy is the computational form of two commitments the historiographical and archival traditions already share: multi-resolution time (Annales / Braudel) and respect for provenance (Cook 2013, Ketelaar 2001, Schellenberg 1956). The dissertation's interdisciplinary contribution is an empirical demonstration that this commitment is necessary for archival research interfaces, with the missing 1943-07-26 as the signature case.
 
-**Discipline pair (cat 2 grounding)**: History + Computer Science. The system is a CS contribution; the case studies are historical research questions; the interdisciplinary move is applied CS for humanities. Cognitive science / philosophy / media studies appear only in the Discussion as related framings.
+**Discipline pair (cat 2 grounding)**: History + Computer Science. History supplies the historiographical commitment to multi-resolution time (Annales) and the archival commitment to provenance (Cook, Ketelaar, Schellenberg); CS supplies the hierarchical retrieval lineage (RAPTOR, GraphRAG, PageIndex) and the system implementation. The integration is substantive, not decorative: §7.3 commits to a synthetic claim about why the chronological hierarchy is the right computational form for archival access. Cognitive science / philosophy / media studies are explicitly out of scope.
 
 **Word budget**: 9000 words main body. Abstract ≤300, Preface ≤500 (excluded). Hard cap 10000.
 
@@ -32,14 +32,18 @@ Plus: Abstract (≤300), Preface (≤500, interdisciplinary rationale + BASc con
 
 ## §1 Introduction (900 words)
 
+**Opening question (historiographical, not retrieval)**: how does a historian read a month of a fascist-era newspaper across the rupture of 25 to 27 July 1943? The Annales-school tradition (Braudel: longue durée, conjoncture, événement) treats history as multi-resolution: the daily event sits inside the conjuncture of the regime sits inside the longue durée of fascist Italy. Reading *Il Messaggero* July 1943 requires moving fluently between these scales. The dominant digital archive paradigm (Chronicling America, Europeana Newspapers, Impresso) does not enable that movement; it assumes a point query over flat OCR.
+
 **Sub-claims**:
-1. Digital newspaper archives at scale (millions of pages) are practically inaccessible to historians: keyword search over OCR'd text returns either too much (broad terms) or too little (rare terms), and ignores the structure of how a newspaper aggregates information across time.
-2. The dominant access paradigm (Chronicling America, Europeana Newspapers, Impresso) assumes the user arrives with a query. Many genuinely historical questions ("how did the paper cover X across a month") are not point queries; they are aggregate, multi-resolution questions that flat retrieval cannot serve.
-3. Mausoleo proposes an alternative: build a hierarchical knowledge index (paragraph → article → day → week → month → archive) over OCR'd output, then expose it via an agent-mediated drill-down API. The dissertation's contribution is the system + an empirical demonstration that it outperforms flat retrieval on archival research tasks.
+1. Multi-resolution reading is a historiographical commitment (Braudel; Annales) that current digital newspaper archives structurally fail to serve. They privilege keyword search over flat OCR, which neither aggregates upward (cannot answer "how did the editorial line shift over the month") nor surfaces structural absences (cannot say what was reported on a missing day).
+2. *Il Messaggero* July 1943 is a stress test for any newspaper-archive interface because it contains a regime-change rupture in the middle of the corpus: the Grand Council voted Mussolini out at 02:40 on 25 July, the King had him arrested that afternoon, the issue of 26 July is missing from the source archive, and the editorial register shifts visibly from 27 July onward. A system that handles this corpus well must do three things flat retrieval cannot: aggregate across days, surface structural discontinuities, and account for missing data as archival evidence.
+3. Mausoleo is built around these three commitments. It builds a hierarchical knowledge index (paragraph to article to day to week to month) over OCR'd output, exposes it via an agent-mediated drill-down API, and treats the missing 26 July as a first-class node whose absence is itself part of the historical record. Three case studies on *Il Messaggero* July 1943 demonstrate that this pipeline outperforms keyword-search-over-flat-OCR on these three task types.
 
-**Evidence type**: Position paper framing. Cite Chronicling America, Europeana Newspapers, Impresso as comparators. Cite Moretti distant-reading and Boroș/Murugaraj historical-newspaper RAG as the methodological neighbours.
+**Evidence type**: position-paper framing for a historiographical question, with engineering as the answer. Cite Braudel + Moretti for the multi-resolution-reading commitment, then Chronicling America / Europeana / Impresso as comparators that fail to serve it, then Murugaraj 2025 / Sarthi 2024 / Edge 2024 / VectifyAI 2025 as the methodological neighbours Mausoleo extends.
 
-**Citation pool**: Moretti 2013, Ehrmann/Düring 2024 (Impresso), Murugaraj 2025 (Topic-RAG historical newspapers), Edge 2024 (GraphRAG), Sarthi 2024 (RAPTOR), VectifyAI 2025 (PageIndex).
+**Citation pool**: Braudel 1958 (longue durée), Moretti 2013 (distant reading), Ehrmann 2020 (Impresso resource), Düring 2024 (Impresso interface), Murugaraj 2025 (Topic-RAG newspapers, retrieval-relevance not OCR-noise), Sarthi 2024 (RAPTOR), Edge 2024 (GraphRAG), VectifyAI 2025 (PageIndex).
+
+**Cross-references to thread the missing 26 July**: §6.4 (lead case study), §7.1 (closing example), §3.3 (handled architecturally as a node-with-summary-but-no-leaves).
 
 ---
 
@@ -57,21 +61,21 @@ Three sub-sections. Tight, position-defining.
 - Classical IR: BM25, TF-IDF (Salton, Robertson)
 - Dense retrieval: BGE-M3, ColBERT (mention briefly, will not be primary baseline)
 - Hierarchical retrieval: RAPTOR (Sarthi 2024), GraphRAG (Edge 2024), PageIndex (VectifyAI 2025)
-- RAG over historical newspapers: Murugaraj 2025 (Topic-RAG, the immediate prior art)
+- RAG over historical newspapers: Murugaraj 2025 (Topic-RAG over Impresso Swiss newspapers; topic-restricted retrieval improves relevance over flat RAG, measured by BERTScore / ROUGE / UniEval; the immediate prior art for newspaper-corpus RAG, though it does not specifically test OCR-noise mitigation).
 - **Gap that Mausoleo fills**: hierarchical retrieval where the hierarchy is *given* by archival structure (chronology) rather than *induced* by clustering. Provenance-respecting (Cook 2013, archival science).
 
 ### §2.3 Historical methodology (~600 words)
 - Annales school multi-scale time (Braudel: longue durée / conjoncture / événement)
 - Distant reading (Moretti, Jockers); critique (Da 2019, Underwood 2019)
-- Newspapers as historical sources: editorial bias, agenda-setting, methodology of using press as evidence (Schudson, Murialdi for Italian press)
-- Italian fascist press: Murialdi 1986, Forno 2012, Bonsaver 2007 for the regime context
+- Newspapers as historical sources: editorial bias, methodology of using press as evidence (Schudson 1978; Murialdi for Italian press)
+- Italian fascist press: Murialdi 1986 *Storia del giornalismo italiano* (covers the regime period), Forno 2012, Bonsaver 2007 for the regime context
 
 **Sub-claims**:
 1. Existing newspaper archives prioritise full-text search over multi-resolution access; Mausoleo addresses a different access modality.
 2. The hierarchical-retrieval lineage (RAPTOR, GraphRAG, PageIndex) validates the paradigm but applies it to single documents or learned hierarchies; Mausoleo applies it to archival corpora with chronologically given hierarchies.
 3. Annales-school multi-scale time provides the historiographical justification for a temporal hierarchy: historians already think this way; Mausoleo gives them a tool that respects it.
 
-**Citation pool**: Moretti 2013, Jockers 2013, Da 2019, Underwood 2019, Salton 1975, Sarthi 2024, Edge 2024, VectifyAI 2025, Murugaraj 2025, Cook 2013, Schellenberg 1956, Braudel 1958, Murialdi 1986, Forno 2012, Bonsaver 2007. Approx 15 sources, all on disk.
+**Citation pool**: Moretti 2013, Jockers 2013, Da 2019, Underwood 2019, Salton 1975, Robertson 2009 (BM25), Sarthi 2024 (RAPTOR), Edge 2024 (GraphRAG), VectifyAI 2025 (PageIndex), Murugaraj 2025 (Topic-RAG, retrieval-relevance), Cook 2013, Ketelaar 2001, Schellenberg 1956, Ehrmann 2020 (Impresso resource paper, LREC), Düring 2024 (Impresso interface paper, Historical Methods), Braudel 1958, Murialdi 1986, Forno 2012, Bonsaver 2007, Schudson 1978. Approx 20 sources, all on disk.
 
 ---
 
@@ -165,53 +169,72 @@ Schema + summarisation pipeline; hands off concrete examples.
 
 ## §6 Evaluation: case studies (2200 words)
 
-The heart of the dissertation. Three case studies, each comparing Mausoleo vs a flat-OCR keyword baseline.
+The heart of the dissertation. Three case studies, each comparing Mausoleo vs a flat-OCR keyword baseline. Case 1 (the missing 1943-07-26) leads because it is the dissertation's signature interdisciplinary moment, not because it is the smallest or most modest finding. Cases 2 and 3 demonstrate the efficiency + quality gap on aggregate and structural questions.
 
-### §6.1 Experimental setup (~400 words)
-- **Baseline**: keyword search over the same OCR'd text (no hierarchy, no summaries). BM25 over articles. Returns ranked article list to a human reader, who must compile findings.
-- **Mausoleo**: agent-mediated drill-down via the CLI tools. Same underlying OCR.
-- **Same LLM** (Claude or GPT-4o) used as the "researcher" agent for both systems, controlled for capability.
-- **Metrics**: completeness (recall of relevant articles vs human-annotated GT), efficiency (steps to answer, total text read), quality (LLM-as-judge on the final compiled answer), serendipity (did the system surface relevant info the agent didn't explicitly query for).
-- LLM-as-judge protocol: blind evaluation, multi-dimension rubric, multiple judge runs.
+### §6.1 Experimental setup (~300 words)
+- **Baseline**: BM25 over the same OCR'd text in the same `documents` table; baseline ignores the `nodes` hierarchy entirely. No summaries, no semantic embedding.
+- **Mausoleo**: agent-mediated drill-down via the CLI tools, hitting `nodes` table summaries + the `text` endpoint for descent to leaves.
+- **LLM (researcher agent)**: Claude Sonnet 4.5 used for both systems with identical system prompts; only the tools differ. Three trials per case study.
+- **Metrics, applied to all three case studies**: efficiency (tool calls + total characters read to reach the agent's compiled answer), completeness (recall of relevant articles vs hand-cleaned ground truth), quality (LLM-as-judge on the compiled answer along factual-accuracy / comprehensiveness / insight axes), serendipity (whether the system surfaced relevant material the researcher agent did not explicitly query for, scored 0/1 per case).
+- **Historical methodology**: relevance ground truth for completeness is built by reading July 1943 issues against the historiographical literature (Pavone 1991, Murialdi 1986, Bosworth 2005, Deakin 1962) and annotating ~30 articles per case study as relevant. This is a small-N annotation protocol; one annotator (the dissertation author), one pass, with disagreements flagged in the appendix. Acknowledged as a methodological limitation in §7.2.
+- **GT provenance**: §6.1 distinguishes article-level ground truth (hand-cleaned transcriptions in `eval/transcriptions/`, used directly) from relevance ground truth (the annotator's relevance judgements per case). Completeness is non-circular because the OCR-side GT and the relevance-side GT are built independently.
+- **LLM-as-judge protocol**: blind evaluation, three-dimension rubric, two judge runs averaged.
 
-### §6.2 Case study 1: the July 25 regime change (~700 words)
+### §6.2 Case study 1 (LEAD): the missing 1943-07-26 (~550 words)
+**Question**: What was reported on 26 July 1943, the day after Mussolini's arrest?
+
+This case leads §6 because it is the dissertation's signature interdisciplinary moment. The 26 July issue is absent from the source archive. Reading this absence requires three simultaneous moves: (a) a CS retrieval problem (null result handling), (b) an archival-science question (provenance of absence per Cook 2013, Ketelaar 2001), and (c) a historical event (the Grand Council deposition at 02:40 on 25 July, arrest that afternoon, regime instability that day).
+
+**Baseline**: returns zero results for date = 1943-07-26. The researcher agent has no way to surface what the silence means.
+
+**Mausoleo**: the day node `1943-07-26` exists in the index even though its leaf paragraphs are empty; its summary contextualises the absence against the surrounding days (07-25 fascist register, 07-27 Badoglio register) and against the historical event. The researcher agent composes an answer that reads the absence as evidence.
+
+**Expected findings**: Mausoleo produces an answer of the form "the 26 July issue is absent; the surrounding context places it on the rupture day; this absence is itself archival evidence of the regime collapse." Baseline produces null. Completeness: Mausoleo recovers the full historical context, baseline recovers nothing. Quality (LLM-as-judge): Mausoleo's answer scores high on all three axes; baseline scores zero.
+
+**Quantitative reporting**: efficiency (tool calls + characters read), completeness (against relevance GT, here trivially Mausoleo wins), quality (LLM-judge mean across 3 trials × 2 judges), serendipity (does Mausoleo surface the Kappler-related context or only the deposition itself).
+
+This case is a definitional capability gap, not a fine-grained efficiency comparison; the §7.1 framing names "missing-data archival capability" as a third category alongside aggregate and structural questions.
+
+### §6.3 Case study 2: the July 25 regime change (~550 words)
 **Question**: How did *Il Messaggero* cover the fall of Mussolini and the transition to the Badoglio government?
 
-**Baseline run**: keyword queries for "Mussolini", "Badoglio", "Gran Consiglio", "Re Vittorio Emanuele". Returns a list of articles; agent compiles a narrative.
+**Baseline run**: keyword queries for "Mussolini", "Badoglio", "Gran Consiglio", "Re Vittorio Emanuele". Returns a ranked article list; the researcher agent reads articles in order, compiles a narrative.
 
-**Mausoleo run**: agent starts at month root, drills to week-of-25-July, then to day 1943-07-25, 1943-07-27 (07-26 missing), reads day summaries, descends to article level for specific evidence.
+**Mausoleo run**: agent starts at month root, drills to week-of-25-July, reads the day summaries for 07-25 and 07-27 (07-26 already named in §6.2), descends to article level for specific evidence.
 
 **Expected findings**:
-- 1943-07-25 morning issue: pure late-fascist register (battle bulletins, "DOVE ARRIVANO I LIBERATORI", "BIECO FURORE BRITANNICO"). 273 articles.
-- 1943-07-26: missing from corpus, the rupture day.
-- 1943-07-27 onward: Badoglio-government register; tonal shift in editorial voice.
-- Mausoleo's day-level summary surfaces this discontinuity directly; the baseline produces a list of "Mussolini" articles that the agent must read fully to discover the same shift.
+- 1943-07-25 morning issue: pure late-fascist register (Sicilian battle bulletins, "DOVE ARRIVANO I LIBERATORI" sarcasm, "BIECO FURORE BRITANNICO"). 273 articles.
+- 1943-07-26 absent (already analysed in §6.2).
+- 1943-07-27 onward: Badoglio-government register; tonal shift visible in editorial voice.
 
-**Quantitative claim**: Mausoleo gets to the regime-change finding in ~5 tool calls; baseline requires reading ~30 articles fully.
+**Quantitative reporting**: all 4 metrics × 3 trials × 2 judges. Anticipated direction: Mausoleo wins on efficiency (~5 tool calls vs baseline's ~30 article reads, where one "tool call" reads at most one article-summary or article and one "article read" is a full article, units approximately comparable for both purposes), Mausoleo ties or wins on completeness, Mausoleo wins on quality (compiled narrative captures the register shift; baseline captures the political event but misses the editorial-tone shift), Mausoleo wins on serendipity (surfaces unrelated war-news continuity that baseline misses).
 
-### §6.3 Case study 2: comparative coverage (~600 words)
+### §6.4 Case study 3: comparative coverage (~500 words)
 **Question**: How does the balance of war coverage vs domestic-politics coverage shift over July 1943?
 
-**Baseline**: cannot answer without manual aggregation across all 30 days. Agent reads several articles per day, classifies each, computes the ratio.
+**Baseline**: cannot answer aggregate questions in a single query. Agent reads sample articles per day, classifies each, computes the ratio across the month.
 
-**Mausoleo**: queries day-level summaries directly, which already characterise the day's editorial balance.
+**Mausoleo**: queries day-level summaries directly; the day summaries already characterise the day's editorial balance. Agent aggregates summary content across the month.
 
 **Expected findings**: war coverage dominates 07-01 to 07-25 (Sicily campaign), drops sharply 07-27 to 07-31 (Badoglio government, transitional editorial line). Domestic politics rise correspondingly.
 
-**Quantitative claim**: Mausoleo answers in ~10 tool calls; baseline requires ~150+ article reads or surface-level keyword counts that miss editorial framing.
+**Quantitative reporting**: all 4 metrics × 3 trials × 2 judges. Anticipated direction: Mausoleo wins decisively on efficiency (~10 tool calls vs ~150 article reads), wins on completeness (full month aggregated, baseline samples), wins on quality (the editorial balance is what the day-summary explicitly characterises), serendipity weak on this case (baseline can also surface counter-examples by chance).
 
-### §6.4 Case study 3: the missing 1943-07-26 (~500 words)
-**Question**: What was reported on 26 July 1943, the day after Mussolini's arrest?
+### §6.5 Aggregate results (~300 words)
+Cross-case-study synthesis. Table:
 
-**Baseline**: returns zero results (no articles for that date). Agent has no way to surface why.
+| Metric | Case 1 (07-26) | Case 2 (07-25) | Case 3 (comparative) |
+|---|---|---|---|
+| Efficiency (tool calls) | M:1, B:0 (null) | M:~5, B:~30 | M:~10, B:~150 |
+| Completeness (recall vs GT) | M:1.0, B:0.0 | M:0.95, B:0.85 | M:0.90, B:0.65 |
+| Quality (judge 0-5) | M:4.5, B:0.0 | M:4.0, B:3.0 | M:4.5, B:2.5 |
+| Serendipity (0/1) | M:1, B:0 | M:1, B:0 | M:0, B:0 |
 
-**Mausoleo**: day-level summary explicitly notes the gap, contextualised against the political event. Agent can compose: "the 26 July issue is missing from this archive; the fall of Mussolini occurred at 02:40 on 25 July; the gap likely reflects either the paper not being printed or its survival rate in the archive."
+(Numbers above are anticipated; will be replaced with measured values from the experimental runs.)
 
-**Quantitative claim**: Mausoleo provides explanatory context for the gap; baseline produces null. (This is a small but methodologically significant case: handling missing data is itself an archival capability.)
+Mausoleo wins on every metric in cases 1 and 3, on three of four in case 2 (efficiency, quality, serendipity tied). Case 1 demonstrates the capability gap (baseline cannot answer); cases 2 and 3 demonstrate the efficiency + quality gap (baseline can answer but more slowly and with less editorial nuance).
 
-### §6.5 Aggregate results (~~no allocation, summary~)
-- Across three case studies: Mausoleo wins on efficiency, completeness, and serendipity. Baseline ties or wins on a fourth dimension (TBD by experimental run).
-- Cost: Mausoleo's index-build cost is paid once; baseline's per-query cost is recurrent.
+Cost analysis: Mausoleo's index-build cost is paid once at corpus-ingest time and amortised across all queries; baseline's per-query cost is recurrent. For a single-month corpus the break-even is ~5 queries; for a 60-year corpus it is approximately the first query. This trade-off is the practical case for hierarchical indexing over flat retrieval at archival scale.
 
 **Citation pool**: Moretti 2013, Da 2019 (for the methodological critique we have to address), Murialdi 1986, Forno 2012, Pavone 1991, Bosworth 2005, Deakin 1962. 7 sources, all on disk.
 
@@ -219,22 +242,29 @@ The heart of the dissertation. Three case studies, each comparing Mausoleo vs a 
 
 ## §7 Discussion (900 words)
 
-### §7.1 What the case studies show (~300 words)
-The pipeline is better than flat retrieval on multi-resolution archival research tasks. Specifically: aggregate questions ("how did coverage change"), structural questions ("what discontinuity is observable"), and missing-data questions ("what was reported on date X") are where the hierarchical index pays off.
+### §7.1 What the case studies show (~350 words)
+The pipeline outperforms flat retrieval on three task types:
+- **Aggregate questions** ("how did coverage shift across the month") where the hierarchical day-summary level pays off (case 3).
+- **Structural questions** ("what discontinuity is observable in the editorial register") where the day-summary level surfaces the rupture directly rather than requiring full-text reading (case 2).
+- **Missing-data questions** ("what does the absence of 26 July tell us") where the index treats the absent day as a first-class node and contextualises it (case 1).
 
-### §7.2 Limitations (~300 words)
-- Index-build cost: not free, scales with corpus size.
-- LLM bias: every summary is the LLM's choice of what's salient; this is a form of second-order agenda-setting.
-- Single-corpus, single-month evaluation: results may not generalise to less politically-volatile corpora.
-- The OCR ensemble's composite score is on three eval issues; ground-truth at the article level for July 1943 is bootstrap-only.
+Closing example: the missing 1943-07-26 is the dissertation's signature finding. It is simultaneously a CS retrieval problem, an archival-science question (provenance of absence), and a historical event (Mussolini's deposition). Mausoleo handles all three; flat retrieval handles none.
 
-### §7.3 Related framings (~300 words)
-Brief mentions, not full engagement, since the core thesis is engineering not philosophy:
-- The architecture happens to mirror cognitive-scientific models of hierarchical knowledge (Friston predictive processing, Miller chunking) but the dissertation does not depend on that connection.
-- The summarisation operation is a form of computational hermeneutic circle (Gadamer) but the empirical claim does not require this framing.
-- Mausoleo participates in the Annales-school multi-scale time tradition by giving it a computational instantiation, but this is methodological, not theoretical.
+### §7.2 Limitations (~250 words)
+- Index-build cost: not free, scales with corpus size; for a single month negligible, for 60 years substantial.
+- LLM bias: every summary is the LLM's choice of what's salient. This is a form of second-order agenda-setting (treated explicitly in §7.3).
+- Single-corpus, single-month evaluation: results may not generalise to less politically-volatile corpora; July 1943 is in part chosen because the rupture is so legible.
+- Article-level OCR ground truth is hand-cleaned (high quality) but relevance ground truth for completeness is single-annotator (the dissertation author), single-pass; documented in §6.1.
+- Generalisability: the pipeline assumes a strong native temporal hierarchy in the source; archives without dated issues (e.g. unpublished correspondence) need a different organising principle.
 
-**Citation pool**: Friston 2010, Miller 1956, Gadamer 1960, Braudel 1958. 4 sources, mentioned briefly.
+### §7.3 The Annales hierarchy as computational form of provenance (~300 words)
+Mausoleo's chronologically-given hierarchy is the computational form of the archival principle of provenance. The Annales tradition (Bloch, Febvre, Braudel) frames history as multi-resolution time: événements (events) sit inside conjonctures (medium-term structures) inside the longue durée (long-term). Archival science (Cook 2013; Ketelaar 2001; Schellenberg 1956) holds that records must be respected in their original order and provenance, with description as activation rather than replacement of the source.
+
+Mausoleo brings these together. Each level of the tree is a different temporal resolution; each summary is an activation of the source paragraphs beneath it; the original order (chronology) is preserved at every level. The missing 26 July, archivally significant precisely because it is the gap in the provenance, becomes a first-class object in the computational record, addressable, summarisable, contextualisable.
+
+This is a synthetic claim, not a borrowed framing: the dissertation argues that an interface to a historical archive is well-designed only insofar as it respects the historiographical commitment to multi-resolution time and the archival commitment to provenance. Mausoleo is one such design; flat retrieval is not. The case studies test the synthesis empirically.
+
+**Citation pool**: Braudel 1958 (longue durée), Cook 2013 (postmodern archival paradigms), Ketelaar 2001 (tacit narratives, summary as activation), Schellenberg 1956 (provenance and original order). 4 sources, all on disk, all engaged substantively.
 
 ---
 
@@ -248,17 +278,24 @@ Future work: scaling beyond a single month; multi-archive support; community-con
 
 ## Citation pool (consolidated)
 
-Approx 35 distinct citations across the dissertation, all currently on disk in `references/papers/`. Distribution:
-- §1 Introduction: 6 sources (Moretti, Ehrmann/Düring, Murugaraj, Edge, Sarthi, VectifyAI)
-- §2 Literature review: 15 sources (above + Salton, Cook, Schellenberg, Da, Underwood, Jockers, Braudel, Murialdi, Forno, Bonsaver, Schudson)
+Approx 36 distinct citations across the dissertation, all currently on disk in `references/papers/`. Distribution:
+- §1 Introduction: 8 sources (Braudel 1958, Moretti 2013, Ehrmann 2020, Düring 2024, Murugaraj 2025, Sarthi 2024, Edge 2024, VectifyAI 2025)
+- §2 Literature review: 20 sources (above + Salton 1975, Robertson 2009 BM25, Cook 2013, Ketelaar 2001, Schellenberg 1956, Da 2019, Underwood 2019, Jockers 2013, Murialdi 1986, Forno 2012, Bonsaver 2007, Schudson 1978)
 - §3 System design: 7 sources (Qwen2.5-VL, BGE-M3, RAPTOR, GraphRAG, Lewis 2020, ReAct, Self-RAG)
-- §4 OCR evaluation: 11 sources (the OCR cluster: Smith, Calamari, LayoutLMv3, Donut, DocLayout-YOLO, Qwen2.5-VL, Soper, Maheshwari, NewsEye, Impresso, Thomas)
-- §5 Knowledge index: 6 sources (BGE-M3, Wu, Yang HAN, GraphRAG, Ketelaar, ICA ISAD)
-- §6 Evaluation: 7 sources (Moretti, Da, Murialdi, Forno, Pavone, Bosworth, Deakin)
-- §7 Discussion: 4 sources (Friston, Miller, Gadamer, Braudel)
+- §4 OCR evaluation: 11 sources (the OCR cluster: Smith Tesseract, Calamari, LayoutLMv3, Donut, DocLayout-YOLO, Qwen2.5-VL, Soper 2025, Maheshwari 2025, NewsEye, Ehrmann 2020 Impresso, Thomas 2024 LT4HALA)
+- §5 Knowledge index: 6 sources (BGE-M3, Wu 2021 recursive book summ, Yang 2016 HAN, Edge 2024 GraphRAG, Ketelaar 2001, ICA 2000 ISAD(G))
+- §6 Evaluation: 7 sources (Moretti 2013, Da 2019, Murialdi 1986, Forno 2012, Pavone 1991, Bosworth 2005, Deakin 1962)
+- §7 Discussion: 4 sources (Braudel 1958, Cook 2013, Ketelaar 2001, Schellenberg 1956), substantively engaged in §7.3 not just name-dropped
 - §8 Conclusion: 0 new
 
-Total unique: ~35 sources. Per the essay-iter rule (8-15 per major section), this is well within range. All on disk, ready for the citation critic.
+Total unique: ~36 sources. Per the essay-iter rule (8-15 per major section), this is well within range for §2 / §6 and on the edge for §1 / §3 / §4 / §5 (which is fine, those sections are tighter). All on disk in `references/papers/`, citation manifest in `references/manifests/`.
+
+Citation correctness fixes applied this revision:
+- Ehrmann/Düring split into Ehrmann 2020 (LREC, resource paper) + Düring 2024 (Historical Methods, interface paper). Previously cited as a single "Ehrmann/Düring 2024" entry, which was a mis-attribution.
+- Murugaraj 2025 OCR-noise claim removed. The paper measures BERTScore / ROUGE / UniEval improvements via topic-restricted retrieval; it does not specifically test OCR-noise mitigation. Outline now claims only "improves retrieval relevance over flat RAG."
+- Murialdi 1986 cited as *Storia del giornalismo italiano* (the actual title of the file on disk; covers the regime period substantively).
+- Boroș 2024 RAG-newspapers entry removed (unverifiable, ACM-paywalled, no preprint). Murugaraj 2025 occupies that slot.
+- Thomas/Gaizauskas/Lu 2024 LT4HALA post-OCR paper attribution corrected; previously cited as Boroș et al.
 
 ---
 
