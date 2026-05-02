@@ -46,7 +46,7 @@ The aim is not to claim a new model architecture but to demonstrate that an end-
 
 ### A.5 OCR post-correction with LLMs
 
-- **Boros et al. (2024), "Post-Correction of Historical Text Transcripts with Large Language Models"** (LT4HALA workshop @ LREC-COLING; aclanthology.org/2024.lt4hala-1.14). Llama 2 instruction-tuning achieves 54.5% CER reduction on BLN600 (19th-c. British newspapers) vs. 23.3% for fine-tuned BART.
+- **Thomas, A., Gaizauskas, R., & Lu, P. (2024), "Leveraging Large Language Models for Post-OCR Correction of Historical Newspapers"** (LT4HALA workshop @ LREC-COLING; aclanthology.org/2024.lt4hala-1.14). Llama 2 instruction-tuning achieves 54.5% CER reduction on BLN600 (19th-c. British newspapers) vs. 23.3% for fine-tuned BART. (Author attribution corrected 2026-05-02: the lit-review draft initially mis-attributed this paper to Boros et al.; the actual authors are the Sheffield NLP group.)
 - **Soper, Fujimoto et al. (2025), "OCR Error Post-Correction with LLMs in Historical Documents: No Free Lunches"** (arXiv:2502.01205). Cautionary counter-evidence: GPT-4 can degrade quality on certain regimes.
 - **Madarasz et al. (2024), "Reference-Based Post-OCR Processing with LLM for Precise Diacritic Text in Historical Document Recognition"** (arXiv:2410.13305).
 - **Maheshwari et al. (2025), "Multimodal LLMs for OCR, OCR Post-Correction, and Named Entity Recognition in Historical Documents"** (arXiv:2504.00414).
@@ -138,7 +138,7 @@ The differentiation is threefold: (i) Mausoleo treats OCR as a foundation-VLM pr
 
 2. **Layout pre-segmentation remains necessary even with strong VLMs for broadsheet newspapers.** Multi-column display with arbitrary aspect ratios exceeds the practical resolution budget of a single VLM forward pass. Justified by Zhao et al. 2024 (DocLayout-YOLO, arXiv:2410.12628) and the dynamic-resolution discussion in the Qwen2.5-VL technical report (arXiv:2502.13923).
 
-3. **An ensemble + LLM-arbitration step over multiple VLM outputs reduces hallucination/dropout failures.** Consistent with Boros et al. 2024 (LT4HALA aclanthology.org/2024.lt4hala-1.14) and Soper et al. 2025 (arXiv:2502.01205) -- post-correction works *when* a reference signal (image or alternate transcription) is supplied; pure-text post-correction is unreliable.
+3. **An ensemble + LLM-arbitration step over multiple VLM outputs reduces hallucination/dropout failures.** Consistent with Thomas et al. 2024 (LT4HALA aclanthology.org/2024.lt4hala-1.14) and Soper et al. 2025 (arXiv:2502.01205) -- post-correction works *when* a reference signal (image or alternate transcription) is supplied; pure-text post-correction is unreliable.
 
 4. **Recursive summarization produces a navigable index that flat retrieval cannot match for archival sense-making queries.** Defended by Wu et al. 2021 (arXiv:2109.10862), Sarthi et al. 2024 RAPTOR (arXiv:2401.18059), and Edge et al. 2024 GraphRAG (arXiv:2404.16130). Mausoleo's article -> page -> issue -> week tree mirrors RAPTOR's recursive cluster-and-summarize loop.
 

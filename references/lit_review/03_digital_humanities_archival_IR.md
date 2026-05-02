@@ -102,7 +102,7 @@ Engaging all three literatures lets the dissertation argue that Mausoleo is neit
 
 **Lewis, P., et al. (2020).** "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks." *NeurIPS 2020.* The original RAG paper: parametric (seq2seq) + non-parametric (dense index) memory. The architectural ancestor of every modern document-grounded LLM system, including Mausoleo. (https://arxiv.org/abs/2005.11401)
 
-**Boroș, E., et al. (2024).** "Retrieval Augmented Generation for Historical Newspapers." *JCDL 2024.* Direct prior art: RAG over historical newspaper archives, with NER-augmented retrieval and re-ranking shown to mitigate OCR noise. The single most important comparator paper for Mausoleo's IR claims. (https://dl.acm.org/doi/10.1145/3677389.3702542)
+**Murugaraj, V., Lamsiyah, S., Düring, M., & Theobald, M. (2025).** "Topic-RAG for Historical Newspapers." *Computational Humanities Research Conference (CHR 2025).* Direct prior art: RAG over historical newspaper archives with topic-aware retrieval shown to mitigate OCR noise. Replaces the originally-cited Boroș 2024 RAG-for-newspapers entry, which we could not verify (ACM-paywalled, no preprint, possible mis-attribution by an upstream agent). Murugaraj et al. is the strongest comparator paper for Mausoleo's IR claims; Mausoleo extends it by replacing topic-aware retrieval with a temporally-organised hierarchical index.
 
 **Thomas, A., et al. (2024).** "Leveraging LLMs for Post-OCR Correction of Historical Newspapers." *LT4HALA 2024.* Llama-2 reduces character error rate by 54% over fine-tuned BART on the BLN600 corpus. Shows that LLMs are now part of the historical-newspaper preprocessing pipeline, not just the front-end. (https://aclanthology.org/2024.lt4hala-1.14/)
 
@@ -135,7 +135,7 @@ The distinguishing claim: Chronicling America, Europeana, and Impresso all assum
 
 3. **Mausoleo's primarily-temporal hierarchy is a defensible specialisation of Ranganathan's PMEST faceted classification for daily-newspaper material**, where Time is the dominant ordering axis and Personality/Matter/Energy/Space are accessed *through* time rather than alongside it.
 
-4. **Mausoleo addresses the OCR-noise problem in historical-newspaper RAG identified by Boroș et al. (2024)** by performing semantic retrieval over LLM-generated summaries rather than raw OCR text. Summaries function as a noise filter, partly mitigating the brittleness of dense retrieval over OCR-degraded heritage text.
+4. **Mausoleo addresses the OCR-noise problem in historical-newspaper RAG identified by Murugaraj et al. (2025)** by performing semantic retrieval over LLM-generated summaries rather than raw OCR text. Summaries function as a noise filter, partly mitigating the brittleness of dense retrieval over OCR-degraded heritage text.
 
 5. **Mausoleo is best understood as a special case of the hierarchical-retrieval lineage (RAPTOR, GraphRAG) where the hierarchy is given by archival structure rather than learned from data.** This is methodologically defensible because daily newspapers already have a strong native hierarchy; the choice to use it rather than re-discover it via clustering is consistent with archival respect for original order.
 
