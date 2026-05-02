@@ -134,19 +134,21 @@ Key facts: Nazi occupation of Rome 10 September 1943 to 4 June 1944. Bread ratio
 - Battaglia, R. (1953) *Storia della Resistenza italiana*. Einaudi.
 - Bosworth, R. J. B. (2005) *Mussolini's Italy: Life under the Dictatorship 1915–1945*. Penguin.
 
-## Recommended single month for the case study: October 1943
+## Case-study month: July 1943 (CORRECTED 2026-05-02)
 
-October 1943 is the strongest candidate; the case is overdetermined.
+The corpus actually digitised is **July 1943**, 30 days from 1943-07-01 to 1943-07-31 (1943-07-26 is missing from the source archive). This is the regime-collapse window, and the case for it is at least as strong as the October case below, on different axes.
 
-1. *Editorial regime is consolidated.* By October the 25-July–12-September interlude is over; RSI is constituted (23 September); German occupation is in force; Spampanato's RSI-aligned line is taking hold at *Il Messaggero*. October is where the dissertation's claim "same masthead, three regimes in a year" is legible from the artefact itself. Pre-armistice months show only the late-fascist register; August's pluralism is transient.
+1. *Within-month regime rupture, with a single observable hinge day.* On the night of 1943-07-24/25 the Grand Council voted Mussolini out (02:40, 25 July); the King had him arrested that afternoon. The morning issue of 1943-07-25 went to press during the meeting, so it carries pure late-fascist register: 273 articles, "Battaglia in Sicilia" bulletins, "DOVE ARRIVANO I LIBERATORI" sarcasm about the Allies, "BIECO FURORE BRITANNICO." 1943-07-26, the rupture day, is missing from the archive itself. 1943-07-27 onward should carry the Badoglio-government register. The dissertation can demonstrate regime change as an observable feature of the press across a single month, with the data's own missing day ratifying the political event.
 
-2. *Event window.* The 16 October ghetto raid, Italy's most consequential Holocaust event, falls inside the month — preceded by Kappler's 26–28 September gold extortion (echoes in early-October issues) and followed by the Tiburtina deportation train of 18 October. Naples is liberated 1 October; the Volturno crossing is mid-month; allied bombings continue on Rome's periphery; Pius XII's silence is contemporary. Bread rations, curfews and black-market life are at a critical phase.
+2. *The data ratifies the historical claim.* The missing 1943-07-26 issue is not just an OCR gap; it is the political event made visible by the corpus's silence. The hermeneutical-injustice argument that the lit review developed for the October ghetto raid translates directly: Mausoleo can either reproduce the silence (a naïve summary "Il Messaggero, July 1943: war coverage, regime news") or it can flag the discontinuity. The 26 July gap is a smaller-scale but methodologically cleaner version of the same argument.
 
-3. *The press silence is itself the case study.* The 16 October round-up is absent or only obliquely glossed in *Il Messaggero* — the sharpest possible empirical demonstration of Fricker's hermeneutical injustice and Foucault's archive. No other month offers a comparable test.
+3. *Single-axis longitudinal experiment.* July gives a clean before/after split: roughly 1943-07-01 to 07-25 is fascist register; 1943-07-27 to 07-31 is Badoglio-interim register. The dissertation can run summarisation at day, week, and month levels and ask which level first surfaces the regime change. This is a concrete falsifiable empirical question of exactly the type Category 4 of the rubric rewards.
 
-4. *Source availability.* BNC Roma, Biblioteca di Storia Moderna e Contemporanea, and Emeroteca Digitale Italiana hold *Il Messaggero* runs for this period. October pages are heavily cited (Katz, Debenedetti, Picciotto, Sarfatti).
+4. *Source availability.* BNC Roma, Biblioteca di Storia Moderna e Contemporanea, Emeroteca Digitale Italiana hold *Il Messaggero* July 1943. The 25 July fall is heavily cited (Deakin, De Felice, Bosworth, Pavone), so the citation pool is dense and well-defined.
 
-July and September 1943 are each dramatic but lack stable editorial regime within the month, and neither contains the ghetto raid. Choose October.
+October 1943 carries the more dramatic ethical case study (the ghetto raid silence) but lacks the within-month rupture: October is post-rupture, fully RSI, editorial regime stable. July is the rupture itself. For a dissertation whose central claim is that hierarchical summarisation enables qualitatively different access to the regime change as it appears in the press, July is the stronger month.
+
+The October framing remains useful as a foil and for the discussion section: a brief comparison of what July's data can tell us versus what October's data could have told us anchors the limits-of-scope discussion.
 
 ## Key arguments to deploy
 
