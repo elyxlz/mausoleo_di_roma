@@ -149,18 +149,48 @@ returned to the agent's context, not bytes the agent had to reason
 about; Mausoleo's bytes carry more compiled information per byte. We
 report it but do not over-interpret.
 
-### Cost analysis (corpus-amortised)
+### Cost (absolute)
 
-Mausoleo's index-build cost is paid once at corpus ingest and amortises
-across all queries (Phase 1: $28.87 USD for 6,480 article summaries +
-32 day summaries + 1 month summary). The Phase 2 case-study rerun
-consumed 5,850,967 input tokens + 52,719 output tokens across
-18 trials over a 27.6-minute wall-time window, billed
-against the Claude Max subscription quota. The baseline's per-query
-cost is recurrent; Mausoleo's per-query cost is dominated by fast
-summary lookups. The break-even on a single-month corpus is
-approximately five queries; on a 60-year corpus the index-build cost is
-justified by the first query alone.
+We report the absolute compute and token costs of the pipeline
+on the July 1943 corpus; this is an unmonetised research project,
+so no break-even or amortisation framing is used.
+
+**One-time OCR build.** The 30 July 1943 issues present in the
+corpus (07-26 absent) were OCR'd by the production ensemble of 8
+sub-pipelines (4 per GPU, deterministic per `configs/ocr/ensemble_30min.py`)
+on 2× RTX 3090 24 GB. Per-issue wall-clock is bounded by the slower GPU
+chain at ~30.5 min (GPU0 30.5 min, GPU1 28.9 min on the 1910 reference issue,
+`eval/autoresearch/program.md` L23); aggregate GPU-time is 0.99 GPU-hours
+per issue. Production total: ~15.3 wall-hours, **~29.7 GPU-hours**.
+
+**One-time LLM index build.** Phase 1 produced 6,480 article summaries
+(Haiku 4.5), 31 day, 5 week, and 1 month summary (Sonnet 4.5), all over
+the OAuth subscription path; the harness-reported phantom-USD cost from
+list per-token rates is **$28.87** (`eval/summaries/run_report.json`,
+no money was actually charged). Per-call token totals were not
+captured in Phase 1 (data gap, see `section_6_5_cost_data.md`).
+End-to-end wall ~2 h 20 min including embedding.
+
+**Per-query LLM cost.** Mean per trial (researcher + 2 judges) over
+the Phase 2 rerun: Mausoleo **328 k input + 2.5 k output tokens, 11.0
+tool calls, 76.7 s wall**; baseline **321 k input + 3.4 k output
+tokens, 28.3 tool calls, 81.6 s wall**. Phase 2 totals across 18
+trials + 36 judge calls: 5,850,967 input + 52,719 output tokens. The
+case-3 oracle classification of all 6,480 articles ran separately at
+~1,018,170 input + 30,266 output tokens across 648 batched Sonnet 4.5
+calls.
+
+**Per-query inference.** ClickHouse retrieval over the 6,517 canonical
+nodes (HNSW vector index + `tokenbf_v1` FTS index) returns sub-second
+on the build host; per-query inference cost is dominated by LLM tokens,
+not by index lookup.
+
+**Billing model.** All Anthropic calls bill against the Claude Max
+OAuth subscription quota, not against a per-token API balance. The
+OCR build, the LLM index build, and the per-query LLM cost are all
+incurred once at the rates reported above; the per-query LLM cost
+recurs at the per-query rate per query. There is no monetised
+recurring cost on this project.
 
 ### Methodology notes
 
