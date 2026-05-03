@@ -39,7 +39,7 @@ A recent NLP literature on hierarchical retrieval, surveyed in chapter two, deri
 
 ## Chapter 2: Three literatures and a corpus
 
-The literatures the system needs to be read against are several. The dominant access mode in the long line of digital newspaper archives remains the keyword query against an OCR'd full text. A more recent line in information-retrieval research has been doing hierarchical access, with the hierarchies usually induced from the corpus itself by clustering or graph-community methods. A much older body of cognitive-science work on how memory organises temporal material at multiple resolutions has not been much operationalised for archival interface design. On top of those three, the corpus has its own historiography, which is what gives the case studies in chapter four their historical bite.
+The dominant access mode in the long line of digital newspaper archives remains the keyword query against an OCR'd full text. A more recent line in information-retrieval research has been doing hierarchical access, with the hierarchies usually induced from the corpus itself by clustering or graph-community methods. A much older body of cognitive-science work on how memory organises temporal material at multiple resolutions has not been much operationalised for archival interface design. On top of those three, the corpus has its own historiography, which is what gives the case studies in chapter four their historical bite.
 
 ### Existing digitised newspaper archives
 
@@ -111,9 +111,7 @@ Following the ReAct loop pattern of Yao et al. (2022), and unlike single-shot re
 
 ## Chapter 4: The missing 26 July, and two contrast cases
 
-The case studies in this chapter ask whether the architectural argument of chapter three makes a measurable difference for a researcher trying to answer real questions about July 1943.
-
-In all three, the comparison is to a BM25 baseline over the same hand-cleaned article transcriptions in the `documents` table, with no access to the `nodes` hierarchy. Mausoleo runs the agent-mediated tree traversal of the previous chapter, with `documents` plus `nodes` plus the semantic, text and hybrid search endpoints. The researcher agent is held constant across both arms (a contemporary commercial LLM under identical system prompt), with a tool-call cap of thirty per trial and three trials per cell at distinct seed prompts. Three metrics are applied uniformly across cases: tool calls and characters returned to the agent's context for efficiency; recall against a hand-built relevance ground truth on the first two cases (single-annotator, against four works of historiography: Pavone, 1991; Murialdi, 1986; Bosworth, 2005; Deakin, 1962) and ratio mean absolute error and root-mean-square error against a per-week war/domestic oracle on the third for completeness; and the mean of two LLM judges scoring at zero to five on each of the three rubric dimensions described in the supplementary material for quality.
+The comparison in all three cases is to a BM25 baseline over the same hand-cleaned article transcriptions in the `documents` table, with no access to the `nodes` hierarchy. Mausoleo runs the agent-mediated tree traversal of the previous chapter, with `documents` plus `nodes` plus the semantic, text and hybrid search endpoints. The researcher agent is held constant across both arms (a contemporary commercial LLM under identical system prompt), with a tool-call cap of thirty per trial and three trials per cell at distinct seed prompts. Three metrics are applied uniformly across cases: tool calls and characters returned to the agent's context for efficiency; recall against a hand-built relevance ground truth on the first two cases (single-annotator, against four works of historiography: Pavone, 1991; Murialdi, 1986; Bosworth, 2005; Deakin, 1962) and ratio mean absolute error and root-mean-square error against a per-week war/domestic oracle on the third for completeness; and the mean of two LLM judges scoring at zero to five on each of the three rubric dimensions described in the supplementary material for quality.
 
 ### The missing 26 July
 
@@ -166,7 +164,7 @@ These results are largely consistent with the cognitive-science framing chapter 
 
 Calendar-given hierarchies hold absent-date nodes where learned hierarchies cannot, and an LLM agent over a multi-resolution index used fewer tool calls and got higher quality scores from the LLM judges than the same agent over a flat keyword index, on these three question types. How a human reader actually engages with the corpus is a separate question that this design has motivated rather than tested. The summariser also adds material that the underlying issues did not contain (the week-of-25-July *prolepsis* on Mussolini's not-yet-announced arrest is the clearest instance), and a second-order treatment of regime-aligned press in the lineage of Murialdi (1986) would want to quantify that supplementation against human-written reference summaries.
 
-An editorial silence in a regime-aligned daily during a regime change is part of what the source records, and the catalogue needs a place to put it.
+At month level the summariser had compressed the regime-change to *l'arresto di Mussolini (25 luglio)*, and that compression too is part of what the index records about July 1943.
 
 ---
 
