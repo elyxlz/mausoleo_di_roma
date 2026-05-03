@@ -11,3 +11,14 @@ round 14: word_count=9914, gan_pass=0/3, target_positions=[9,1,5], status=FAIL
 round 15: word_count=9920, gan_pass=0/3, target_positions=[8,9,7], status=FAIL
 round 16: word_count=9905, gan_pass=0/3, target_positions=[2,3,8], status=FAIL
 round 17: word_count=9897, gan_pass=0/3, target_positions=[4,7,3], status=FAIL
+round 20: word_count=8420, gan_pass=0/3, target_positions=[5,6,3], status=FAIL (FIRST ROUND AT NEW POSITION-1-BANNED CONSTRAINT)
+round 21: word_count=8462, gan_pass=1/3, target_positions=[4,2,3], status=PASS_AT_POS_3 (first non-pos-1 PASS at new constraint)
+round 22: word_count=8454, gan_pass=0/3, target_positions=[5,7,2], status=FAIL
+round 23: word_count=8071, gan_pass=1/3, target_positions=[4,3,6], status=PASS_AT_POS_3
+round 24: word_count=8187, gan_pass=1/3, target_positions=[8,6,5], status=PASS_AT_POS_6
+round 25: word_count=8254, gan_pass=0/3, target_positions=[5,3,4], status=FAIL
+round 26: word_count=8287, gan_pass=0/3, target_positions=[9,6,5], status=FAIL
+round 27: word_count=8284, gan_pass=0/3, target_positions=[3,9,8], status=FAIL
+round 28: word_count=8202, gan_pass=0/3, target_positions=[4,8,5], status=FAIL
+round 29: word_count=8268, gan_pass=0/3, target_positions=[7,9,5], status=FAIL
+round 30: word_count=8268, gan_pass=1/3, target_positions=[5,3,9], status=PASS_AT_POS_3 (FINAL; rounds 21/23/24/30 all tie BEST at 1/3 under no-pos-1 constraint)
