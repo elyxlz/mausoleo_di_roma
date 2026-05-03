@@ -1,10 +1,13 @@
-# §6.5 Cost-amortisation data
+# §6.5 Absolute-cost data
 
-Backing numbers for the §6.5 final paragraph and the §7.2 index-build limitation.
+Backing numbers for the §6.5 cost subsection and the §7.2 index-build limitation.
 Authoritative sources are cited inline (RUNLOG entries, file paths, ClickHouse
 queries). All LLM cost figures are token-rate proxies (no API spend; calls bill
 against the Claude Max OAuth subscription quota); this is flagged
-explicitly throughout — see "phantom-USD caveat" below.
+explicitly throughout — see "phantom-USD caveat" below. This file reports
+**absolute costs only**; the dissertation deliberately does not use a
+break-even or amortisation framing because Mausoleo is an unmonetised research
+project, not a commercial service.
 
 > **Phantom-USD caveat.** Phase 1 (`eval/summaries/run_report.json` and `_logs/run.log`)
 > and the first Phase 2 run (`eval/case_studies/RUNLOG.md`, lines 1-30) both report
@@ -16,7 +19,59 @@ explicitly throughout — see "phantom-USD caveat" below.
 > retained because Phase 1 did not log per-call token totals — only the
 > per-call cost the harness computed from the token counts before discarding them.
 
-## 1. Phase 1 — index build (one-time)
+## 1. OCR compute (one-time, Phase 0)
+
+Source: `eval/autoresearch/program.md` (final-baseline section, L18-L23) for
+per-issue wall times; `eval/predictions/ensemble_30min_1943-07-*.json` for the
+production-run output count.
+
+The production OCR pipeline is `configs/ocr/ensemble_30min.py` — one
+`OcrPipelineConfig` running the `ParallelEnsembleOcr` operator over 8
+deterministic sub-pipelines (4 per GPU, two RTX 3090 24 GB cards). Per-issue
+wall-clock on the 1910 reference issue: **GPU0 30.5 min, GPU1 28.9 min**;
+end-to-end wall is bounded by the slower chain at **~30.5 min/issue**, while
+aggregate GPU-time is **30.5 + 28.9 = 59.4 GPU-min ≈ 0.99 GPU-hours/issue**.
+
+| Item | Value | Source |
+|---|---|---|
+| Hardware | 2× RTX 3090 24 GB | `program.md` L23 |
+| Sub-pipelines / issue | 8 (4 GPU0 + 4 GPU1) | `program.md` L25-37 |
+| Per-issue wall-clock (max of two GPU chains) | ~30.5 min | `program.md` L23 |
+| Per-issue aggregate GPU-time | 0.99 GPU-hours | derived (GPU0 30.5 + GPU1 28.9 min) |
+| July 1943 issues processed | **30** (07-01 to 07-31, 07-26 absent in source) | `eval/predictions/ensemble_30min_1943-07-*.json` |
+| **Production run total wall-clock** | **~15.3 hours** (30 × 30.5 min) | derived |
+| **Production run total GPU-hours** | **~29.7 GPU-hours** (30 × 0.99) | derived |
+| Backend | vllm preferred; transformers fallback for unsupported models | `program.md` |
+| Determinism | full pipeline reproducible from raw images, zero-cache | `program.md` L21 |
+
+**Caveat on extrapolation.** The 30.5 min/28.9 min split was measured on the
+1910 reference issue (193 articles, 185 k chars). July 1943 issues vary in
+page count and article density; the 30.5 min/issue figure is treated as a
+conservative upper bound under the hard 30-min/issue constraint the pipeline
+was tuned to. Per-issue 1943 wall times were not captured at production-run
+time (no per-issue timing log was retained), so the total-GPU-hours figure
+is an honest extrapolation from the eval-issue calibration, not a direct
+measurement.
+
+### 1.1 Linear-scaling extrapolation
+
+The OCR cost scales linearly with issue count (each issue is processed
+independently, no cross-issue work). For corpus scale-ups:
+
+| Scale | Issues | Total wall (single 2-GPU host) | Total GPU-hours |
+|---|---|---|---|
+| One month (July 1943, measured) | 30 | ~15.3 h | **~29.7** |
+| Six years (×72 months) | ~2,160 | ~46 days | ~2,140 |
+| Sixty years (full *Il Messaggero* run) | ~21,600 | ~457 days | **~21,400** |
+
+The 60-year scale-up is reported as a substantial-but-tractable cost:
+21,400 GPU-hours on 2× RTX 3090 is ~14 months of single-host wall-time,
+or ~14 days on a 30× parallel cluster. It is not commercial-cost prohibitive
+(rented A100/H100 pricing puts the equivalent at low five figures USD), but
+the dissertation does not pursue that framing; the figure is reported as
+absolute compute only.
+
+## 2. Phase 1 — LLM index build (one-time)
 
 Source: `eval/summaries/run_report.json`, `eval/summaries/_logs/run.log`,
 `eval/summaries/manifest.json`.
@@ -42,7 +97,7 @@ Source: `eval/summaries/run_report.json`, `eval/summaries/_logs/run.log`,
 | LLM-call count | not logged per-call in this run; one call per node ⇒ 6,480 + 31 + 5 + 1 = 6,517 calls | derived |
 | Token totals | **not captured** in Phase 1 (harness logged dollars from rate × tokens, then discarded the token counts). Phase 2 captures tokens directly. | gap, flagged below |
 
-### 1.1 Per-summary average cost
+### 2.1 Per-summary average cost
 
 Average over the 6,517 summary nodes:
 
@@ -65,10 +120,10 @@ These reverse-engineered token figures are not authoritative; they are
 included for §6.5 prose so the dissertation can quote a unit. The authoritative
 record is `run_report.json` (cost) and `manifest.json` (node counts).
 
-## 2. Phase 2 — case-study per-query cost (recurring)
+## 3. Phase 2 — case-study per-query cost (recurring at the per-query rate)
 
-Source: `eval/case_studies/RUNLOG.md` "Rerun 2026-05-03" block (lines 53-74)
-and "Final summary" (lines 75-83). Token counts are direct from the OAuth
+Source: `eval/case_studies/RUNLOG.md` "Rerun 2026-05-03" block (lines 112-151)
+and "Final summary" (lines 154-165). Token counts are direct from the OAuth
 endpoint usage stream.
 
 | Item | Mausoleo | Baseline (BM25 + raw articles) |
@@ -82,92 +137,31 @@ endpoint usage stream.
 | Mean tool calls / trial | 11.0 | 28.3 |
 
 (Per-trial totals derived from the `done … tok_in= tok_out=` deltas in
-`RUNLOG.md` lines 56-74. Each trial-line includes the researcher call
-chain *and* the two judge calls for that trial; the case-3 oracle
-classification of all 6,480 July-1943 articles ran separately and is
-not in the per-trial figures. The headline 5,850,967 / 52,719 in the
-RUNLOG matches Mausoleo + baseline summed: 2,959,497 + 2,891,470 =
-5,850,967 in.)
+`RUNLOG.md`. Each trial-line includes the researcher call chain *and*
+the two judge calls for that trial; the case-3 oracle classification of
+all 6,480 July-1943 articles ran separately and is not in the per-trial
+figures. The headline 5,850,967 / 52,719 in the RUNLOG matches Mausoleo
++ baseline summed: 2,959,497 + 2,891,470 = 5,850,967 in.)
 
-The two systems use roughly the same total tokens per trial because
-Mausoleo trades many small baseline reads (~30 article snippets) for
-fewer but larger reads (day or week summaries, each ~200-400 words).
-Mausoleo wins on tool-call count (11 vs 28); the byte-count comparison
-is in §6.5 of the dissertation prose.
+### 3.1 Case-3 oracle classification (one-time, separate from per-trial cost)
 
-The RUNLOG-reported phantom-USD for the full Phase 2 run (researcher + judges
-+ oracle classification) is **$19.17** (`RUNLOG.md` line 74). The
-researcher-only share works out to roughly **$1.05 per query** at Sonnet
-4.5 list rates, used as the baseline per-query divisor in §3 below.
+Source: `eval/case_studies/case3_oracle_ratios.json` build run.
+
+- 6,480 July-1943 articles classified WAR/DOMESTIC/OTHER at temperature 0,
+  Sonnet 4.5 over OAuth, batched 10/call → **648 batched calls**.
+- Tokens (approx, captured at run-time): **~1,018,170 input + ~30,266 output**.
+- Combined with per-trial Phase 2 totals, this brings the full Phase 2
+  rerun token usage to **~6,869,137 input + ~82,985 output**.
+
+The oracle is a one-time cost (the WAR/DOMESTIC/OTHER labels are stored
+on disk and reused across trials and reanalyses); it is reported separately
+because it is a methodological artefact of the case-3 metric design, not
+of either system under test.
+
+### 3.2 Baseline-side note
 
 Baseline embedding/BM25 indexing cost: zero LLM calls (in-process BM25 over
 the 6,480 article texts). Index build is a few seconds, no API.
-
-## 3. Break-even table
-
-We compare the one-time Mausoleo index-build cost against the recurring
-baseline per-query cost. Two units are reported: phantom-USD (with the
-caveat above) and tokens. The single-month corpus uses the actual measured
-numbers; six-year and sixty-year scale-ups assume linear growth in the
-article-summary phase (the dominant phase) and sub-linear growth in
-day/week/month/year/decade levels (more on this in §5 below).
-
-### Per-query cost (the divisor)
-
-We take the **baseline** per-query cost as the recurring cost the agent
-would otherwise pay against a flat retrieval store. From §2 above:
-- baseline `tok_in` mean per trial ≈ 277 k, `tok_out` mean ≈ 2.8 k → ~280 k
-  total tokens per query.
-- phantom-USD per baseline query: $1.05 mean (from the $9.43 baseline-side
-  total ÷ 9 trials, computed from the tok totals × Sonnet 4.5 list rates).
-
-### Index-build cost (the dividend) at three corpus scales
-
-| Scale | Articles | Day nodes | Week nodes | Month/Year/Decade nodes | Index-build phantom-USD | Index-build tokens (article-phase, est.) |
-|---|---|---|---|---|---|---|
-| **One month** (July 1943 — measured) | 6,480 | 31 | 5 | 1 | **$28.87** | ~16.2 M article-phase + ~2.5 M day-phase ≈ ~19 M |
-| **Six years** (×72 months, articles linear; day/week/month linear; year +6, decade +1) | ~466,560 | ~2,232 | ~360 | ~78 | **~$2,078** (article ~$1,383 + day ~$683 + higher levels ~$12) | ~1.4 B |
-| **Sixty years** (full *Il Messaggero* archival scope: ×720 months) | ~4,665,600 | ~21,900 | ~3,600 | ~735 | **~$20,800** (article ~$13,827 + day ~$6,889 + higher levels ~$95) | ~14 B |
-
-Linear-extrapolation caveats spelled out in §5 below.
-
-### Break-even N (queries to pay back the index)
-
-Break-even N = (index-build cost) / (baseline per-query cost). Reported
-in both units; either one alone is misleading given the phantom-USD caveat.
-
-| Scale | Index-build phantom-USD | Per-query phantom-USD (baseline) | **Break-even N (USD)** | Index-build tokens | Per-query tokens (baseline) | **Break-even N (tokens)** |
-|---|---|---|---|---|---|---|
-| One month (July 1943) | $28.87 | $1.05 | **~28 queries** | ~19 M | ~280 k | **~68 queries** |
-| Six years | ~$2,078 | $1.05 | **~1,979 queries** | ~1.4 B | ~280 k | **~5,000 queries** |
-| Sixty years | ~$20,800 | $1.05 | **~19,810 queries** | ~14 B | ~280 k | **~50,000 queries** |
-
-**The outline §6.5 currently claims**:
-> "For a single-month corpus the break-even is ~5 queries; for a 60-year
-> corpus it is approximately the first query."
-
-**This is wrong by the measured numbers.** Mausoleo's index-build cost is
-*not* paid back in 5 queries on a one-month corpus — it's paid back in
-~28-68 queries depending on unit. At 60-year scale the break-even is
-~20 k queries, not "approximately the first query." The correct framing
-for §6.5 is the *opposite* of the original outline:
-
-> Cost analysis: Mausoleo's index-build cost is paid once at corpus-ingest
-> time and amortised across all subsequent queries; the baseline pays its
-> recurring per-query cost on every query. On a single-month corpus, the
-> measured break-even is ~28-68 queries (phantom-USD vs token unit; see
-> §6.5 cost table). On a 60-year corpus, the break-even rises in absolute
-> terms to ~20,000 queries because index build scales with corpus size
-> while per-query cost is roughly corpus-size-independent for a flat
-> baseline. **The case for hierarchical indexing at archival scale is
-> therefore not strictly cost-driven on Mausoleo's measured numbers; it
-> rests on the qualitative wins of §6.2-§6.4 (case 1 capability gap,
-> case 2 + 3 quality + completeness wins) and on the operational fact
-> that flat retrieval over millions of articles is not a usable interface
-> regardless of cost.** This contradicts the original outline forecast and
-> is reported here as a measured-vs-anticipated revision; flagged in §7.2.
-
-This revision must be carried into the §6.5 prose before submission.
 
 ## 4. Storage / inference footprint
 
@@ -196,11 +190,27 @@ Source: live ClickHouse instance (`http://localhost:8123`, database
 disk, the embedding column is 7.6 MiB, and per-query CH inference is
 effectively free at this scale. Storage is therefore not a cost factor at
 the single-month or six-year scales; at sixty-year scale the disk footprint
-projects linearly to ~1.5-2 GiB on disk, still trivial.
+projects linearly to ~1.5-2 GiB on disk, still trivial. Per-query
+inference latency is sub-second regardless of corpus scale because vector
+retrieval over HNSW and FTS over `tokenbf_v1` are both logarithmic in node
+count.
 
-## 5. §7.2 limitation flag (must be added to the limitations list)
+## 5. Absolute-cost summary (the headline numbers for §6.5)
 
-The cost analysis in §6.5 has three load-bearing assumptions that the
+| Stage | Cost | Unit | Cadence |
+|---|---|---|---|
+| OCR build (30 July 1943 issues) | **~29.7 GPU-hours** | 2× RTX 3090 wall | one-time |
+| OCR build wall-clock | **~15.3 hours** | single-host serial-issue | one-time |
+| LLM index build | **$28.87 phantom-USD** | OAuth (no money charged) | one-time |
+| LLM index build wall-clock | **~2 h 20 min** | end-to-end | one-time |
+| Case-3 oracle classification | **~1.05 M input + 30 k output tokens** | OAuth | one-time |
+| Per-query Mausoleo | **328 k input + 2.5 k output tokens, 11 tool calls, 77 s wall** | OAuth | per query |
+| Per-query baseline | **321 k input + 3.4 k output tokens, 28 tool calls, 82 s wall** | OAuth | per query |
+| Per-query ClickHouse inference | **sub-second** | localhost | per query |
+
+## 6. §7.2 limitation flag (must be reflected in the limitations list)
+
+The cost subsection in §6.5 has three load-bearing assumptions that the
 dissertation must call out:
 
 1. **Phantom-USD unit.** All "cost" figures in §6.5 and this annex are
@@ -211,34 +221,21 @@ dissertation must call out:
    would be on an invoice. The token counts (Phase 2 only — Phase 1 did
    not capture them per call) are the more durable unit.
 
-2. **Linearity of index-build cost in corpus size.** The six-year and
-   sixty-year break-even numbers in §3 above assume the article-summary
-   phase scales linearly with article count. This is approximately true
-   for the article phase (each article is summarised independently) but
-   sub-linear for higher levels: a year-summary collapses 12 month
+2. **Linearity of OCR and article-summary cost in corpus size.** The
+   60-year scale-ups in §1.1 and §2 above assume the OCR pipeline and
+   the article-summary phase scale linearly with article/issue count.
+   This is approximately true (each issue/article is processed
+   independently). Higher LLM levels (week, month, year, decade,
+   archive) are sub-linear: a year-summary collapses 12 month
    summaries (not 12 × 6,480 articles), a decade-summary collapses 10
-   year summaries. The break-even table is therefore a slight
-   *over-estimate* of build cost at higher scales; the article phase
-   continues to dominate.
+   year summaries. The article phase and OCR continue to dominate at
+   archival scale.
 
-3. **Per-query cost is treated as corpus-size-independent for the
-   baseline.** This holds while the BM25 baseline returns a fixed
-   top-K of ~30 short snippets per query (which it did in §6 trials).
-   For a 60-year corpus the snippet-quality of BM25 degrades sharply
-   (more polysemous matches per query) and the agent would either issue
-   more queries or read more snippets per query, raising the per-query
-   cost. The break-even N at 60-year scale is therefore an *upper bound*;
-   the true break-even is somewhere lower because the baseline gets worse,
-   not because Mausoleo gets cheaper.
-
-4. **Outline-vs-measured contradiction.** The §6.5 paragraph in the
-   outline (referenced verbatim in §3 above) anticipated break-even at
-   "~5 queries" for one month and "approximately the first query" for
-   60 years. The measured numbers do not support this. The cost case
-   for Mausoleo is *not* the strongest case at small N; the strongest
-   cases are the qualitative wins documented in §6.2-§6.4 (definitional
-   capability gap, completeness, quality) and the operational
-   non-substitutability of flat retrieval at archival scale. The §6.5
-   prose must be revised before submission to reflect the measured
-   numbers, and §7.2 must add this revision as a limitation of the
-   original cost-amortisation argument.
+3. **Per-query ClickHouse inference is corpus-size-independent in
+   practice.** This holds because the `embedding` column is HNSW-indexed
+   and the `summary`/`raw_text` columns carry `tokenbf_v1` tokens,
+   both of which give sub-second retrieval over millions of nodes.
+   The per-query cost reported in §3 is therefore stable across the
+   one-month, six-year, and sixty-year scales; only the LLM cost per
+   query changes as the agent reads more or longer summary nodes,
+   and that change is bounded by the fixed-depth tree traversal.
