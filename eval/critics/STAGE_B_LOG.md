@@ -22,3 +22,4 @@ round 27: word_count=8284, gan_pass=0/3, target_positions=[3,9,8], status=FAIL
 round 28: word_count=8202, gan_pass=0/3, target_positions=[4,8,5], status=FAIL
 round 29: word_count=8268, gan_pass=0/3, target_positions=[7,9,5], status=FAIL
 round 30: word_count=8268, gan_pass=1/3, target_positions=[5,3,9], status=PASS_AT_POS_3 (FINAL; rounds 21/23/24/30 all tie BEST at 1/3 under no-pos-1 constraint)
+round 31: word_count=8980 (v10; +712 over v9), stripped=8262, gan_pass=0/3, target_positions=[5,7,6], status=FAIL (cohort-mining round: applied Type A/B/C cohort-mirroring moves — BASc seminar reference in Preface, Whittington close-reading in §2.3, human-subjects scope-out in §5; all three new moves were individually flagged as tells; no improvement on round-30 baseline; rounds 21/23/24/30 still tie BEST at 1/3)
