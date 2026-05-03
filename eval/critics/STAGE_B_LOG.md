@@ -1,1 +1,5 @@
 round 4: word_count=9505, gan_pass=1/3, BEST_GAN=round_4_pass=1/3 (confidence on FAILs dropped from near-certain to lean-toward; ties round 2/3 PASS count)
+round 5: word_count=9427, gan_pass=1/3, BEST_GAN=round_4_pass=1/3 (REGRESSED: FAIL confidence climbed back to near-certain; Preface cut overshot, branch round 6 from v3)
+round 6: word_count=9571, gan_pass=1/3, BEST_GAN=round_4_pass=1/3 (no movement on FAIL confidence but PASS-position critic praised new preface anchor; "X rather than Y" antithesis remains dominant tell)
+round 7: word_count=9477, gan_pass=1/3, BEST_GAN=round_4_pass=1/3 (seed 1944 dropped near-certain → lean-toward; seed 1943 stayed near-certain; round 4 still tightest aggregate confidence)
+round 8: word_count=9450, gan_pass=1/3, BEST_GAN=round_4_pass=1/3 (FINAL; seed 1943 dropped to lean-toward, seed 1944 climbed to near-certain; round 4 v3 is BEST_GAN with both FAIL seeds at lean-toward)
