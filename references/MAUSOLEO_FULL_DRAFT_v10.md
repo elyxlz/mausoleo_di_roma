@@ -12,12 +12,9 @@ There is an interdisciplinary argument running underneath this. Over the past ce
 
 ---
 
-## Preface
+## Acknowledgments
 
-I came to this dissertation from the engineering side. I had spent the previous year working on retrieval-augmented generation pipelines for technical documentation and wanted a final-year project that would put the same techniques in front of source material that genuinely resists being chunked. Italian regime-period newspapers were the natural pick from the languages I read, and *Il Messaggero* was where the 1943 issue list happened to be most complete in the available scans. The missing 26 July issue I noticed only when I was assembling the per-day file inventory and one of the days came up empty.
-
-
-I came to the project from a background in machine learning, with two undergraduate modules in historical methodology and a working knowledge of Italian. The first six weeks went on the OCR ensemble before the index design was even drafted. I thank Dr Yi Gong for supervising; her comments on the cognitive-science framing and on what the system can and cannot warrant shaped the chapters that follow.
+I thank Dr Yi Gong for supervising. Her comments on the cognitive-science framing, and on what the system can and cannot warrant, shaped the chapters that follow.
 
 ---
 
