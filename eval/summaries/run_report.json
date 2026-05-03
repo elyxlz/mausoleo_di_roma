@@ -1,0 +1,33 @@
+{
+  "elapsed_sec": 367.9,
+  "elapsed_min": 6.13,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "cache_read_tokens": 0,
+  "cache_creation_tokens": 0,
+  "total_cost_usd": 28.87,
+  "llm_calls": 0,
+  "failures": 0,
+  "node_counts": {
+    "paragraph": 0,
+    "article": 6480,
+    "day": 31,
+    "week": 5,
+    "month": 1
+  },
+  "cost_breakdown_usd": {
+    "article_phase_haiku": 19.212,
+    "day_phase_sonnet": 9.483,
+    "week_month_phases_sonnet": 0.175
+  },
+  "notes": "Resumed twice (rate-limit, then embedding fallback). Cached steps report $0 cost in their run; total cost reflects work actually billed. Embedding model fell back from BGE-M3 (CPU too slow, ~70 min for articles alone) to paraphrase-multilingual-MiniLM-L12-v2 (384 dim, ~6 min total). Re-run with BGE-M3 once GPU is online.",
+  "embedding_model": "paraphrase-multilingual-MiniLM-L12-v2",
+  "embedding_dim": 384,
+  "llm_models": {
+    "article": "claude-haiku-4-5",
+    "day_week_month": "claude-sonnet-4-5"
+  },
+  "models_planned": {
+    "embedding": "BAAI/bge-m3 (deferred)"
+  }
+}

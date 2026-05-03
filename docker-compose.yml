@@ -12,6 +12,8 @@ services:
       nofile:
         soft: 262144
         hard: 262144
+    environment:
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
 
   server:
     build: .
@@ -23,6 +25,17 @@ services:
     environment:
       - CLICKHOUSE_HOST=clickhouse
       - CLICKHOUSE_PORT=8123
+      - CLICKHOUSE_DATABASE=default
+      - MAUSOLEO_AUTO_SCHEMA=1
+      # Set to "zero" to skip loading BGE-M3 in-process. The semantic /
+      # hybrid endpoints still respond, but query embeddings are zero
+      # vectors. Install the [search] extra to enable real embeddings.
+      - MAUSOLEO_EMBED_BACKEND=zero
+    volumes:
+      # Mount transcription / summary corpora into the container so the
+      # `mausoleo load` command can be run from inside.
+      - ./eval/transcriptions:/data/transcriptions:ro
+      - ./eval/summaries:/data/summaries:ro
 
 volumes:
   clickhouse_data:
