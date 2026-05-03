@@ -1,0 +1,9 @@
+# Abstract
+
+Digital newspaper archives such as Chronicling America, Europeana Newspapers and Impresso afford keyword search and faceted browsing over flat OCR, but they do not afford the multi-resolution movement that historians, following the Annales tradition of Braudel, routinely demand: drill-down across the day, the week and the month, and principled handling of dates the archive does not hold. Two task types expose the limitation. Aggregate questions about how coverage shifts across a month are answerable by flat retrieval only through laborious manual aggregation. Missing-data questions are unanswerable in principle, because an absent date returns no results.
+
+This dissertation presents Mausoleo, an end-to-end pipeline that combines an ensemble VLM OCR stage, a chronologically organised five-level summary index stored in ClickHouse, and an agent-mediated search interface over that index. The hierarchy is the computational form of two commitments the historiographical and archival traditions already share: multi-resolution time and respect for provenance.
+
+The pipeline is evaluated on *Il Messaggero*, July 1943, against a BM25 baseline operating over the same article corpus. Across three case studies and eighteen scored trials, Mausoleo reaches answers in roughly half the tool calls of the baseline (mean 11.0 against 28.3) and is preferred by two LLM judges on a three-dimension rubric in every case. The signature finding concerns the issue of 26 July 1943, the day after the deposition of Mussolini, which is missing from the source archive: Mausoleo represents the absent day as a first-class node whose summary contextualises the gap, while the BM25 baseline cannot return it.
+
+The contribution is an empirical demonstration that chronologically given, provenance-respecting hierarchies are the right interface form for archival research, not a decorative addition to it.
